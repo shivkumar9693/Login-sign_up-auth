@@ -149,13 +149,14 @@ router.post("/reset-password", async (req, res) => {
       return res.status(400).send("Invalid or expired token");
     }
 
-    user.password = password;
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash the new password
+    user.password = hashedPassword;
     user.resetToken = undefined;
     user.resetTokenExpiration = undefined;
     await user.save();
-
     res.redirect("/login");
   } catch (err) {
+    console.error(err);
     res.status(500).send("Error resetting password");
   }
 });
